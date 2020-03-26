@@ -59,6 +59,10 @@ class Game:
                 player_cards.append(self.card_deck.pop())
             elif move == 'S':  # STAND
                 break
+            elif move == 'D':  # DOUBLE DOWN
+                self.player.bet_amount(bet)  # double the bet
+                player_cards.append(self.card_deck.pop())  # player gets another card
+                break  # now its the dealers turn
 
             # check for bust
             if sum(player_cards) > 21:
@@ -95,15 +99,20 @@ class Player:
     def __init__(self, init_capital):
         self.capital = init_capital
 
-    def bet(self):
+    def bet(self):  # bet based on strategy
         if self.capital > 5:
             self.capital -= 5
             return 5
         else:
             return 0
 
+    def bet_amount(self, amount):
+        self.capital -= amount
+
     def play(self, player_value, dealer_value):  # hit or stand for given game setting
-        if player_value < 17:
+        if player_value == 11:
+            return 'D'
+        elif player_value < 17:
             return 'H'
         else:
             return 'S'
