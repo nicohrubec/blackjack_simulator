@@ -66,7 +66,7 @@ class Game:
             while True:
                 # information of relevance for the decision of the player is the value of his cards and the value of
                 # the dealer card he can see
-                move = self.player.play(sum(player_cards), dealer_cards[0])
+                move = self.player.play(player_cards, dealer_cards[0])
 
                 if move == 'H':  # HIT
                     player_cards.append(self.card_deck.pop())
@@ -131,7 +131,9 @@ class Player:
     def bet_amount(self, amount):
         self.capital -= amount
 
-    def play(self, player_value, dealer_value):  # hit or stand for given game setting
+    def play(self, player_cards, dealer_card):  # hit or stand for given game setting
+        player_value = sum(player_cards)
+        
         if player_value == 11:
             return 'D'
         elif player_value < 17:
