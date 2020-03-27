@@ -1,22 +1,23 @@
 import pandas as pd
 
 from src.game import Game
-from src.players import Player
+from src.players import player_factory
 
 
 class Simulator():
-    def __init__(self, n_games, n_rounds, num_decks, deck_penetration, player_capital):
+    def __init__(self, n_games, n_rounds, num_decks, deck_penetration, player_type, player_capital):
         self.n_games = n_games
         self.n_rounds = n_rounds
         self.num_decks = num_decks
         self.deck_penetration = deck_penetration
+        self.player_type = player_type
         self.capital = player_capital
         self.results = pd.DataFrame()
 
     def simulate(self):
         for i in range(self.n_games):
-            p = Player(self.capital)
-            game = Game(self.num_decks, p, self.n_rounds, self.deck_penetration)
+            player = player_factory(self.player_type, self.capital)
+            game = Game(self.num_decks, player, self.n_rounds, self.deck_penetration)
             game_results = game.play_game()
 
             run_id = 'run_' + str(i)

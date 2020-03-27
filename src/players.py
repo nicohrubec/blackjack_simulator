@@ -1,3 +1,10 @@
+def player_factory(player_type, capital):
+    if player_type == 'basic':
+        return Player(capital)
+    else:
+        raise ValueError('There is no such player.')
+
+
 class Player:
 
     def __init__(self, init_capital):
