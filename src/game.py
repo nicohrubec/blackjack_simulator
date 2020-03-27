@@ -52,13 +52,12 @@ class Game:
         dealer_bust = False
         blackjack = False
 
-        # check for blackjack
-        if 1 in player_cards and sum(player_cards) == 11:  # blackjack: ace stored as 1 + value 10 card = 11
-            if 1 in dealer_cards and sum(dealer_cards) == 1:  # dealer also has a blackjack
-                self.player.add_capital(bet)  # player gets back his bet
-            else:  # dealer has no blackjack
+        if sum(player_cards) == 21:  # blackjack: ace + value 10 card = 21
+            if not sum(dealer_cards) == 21:  # dealer has no blackjack
                 print("BLACKJACK")
                 self.player.add_capital(2.5 * bet)  # bet + 1.5 * bet
+            else:  # dealer has blackjack as well
+                self.player.add_capital(bet)  # player gets back his bet
 
             blackjack = True  # round done
 
