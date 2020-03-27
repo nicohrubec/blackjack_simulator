@@ -16,11 +16,13 @@ class Game:
     def init_card_deck(self):
         deck = []
 
-        for i in range(1, 14):
+        for i in range(2, 14):
             if i < 10:
                 deck.extend([i] * 4 * self.num_decks)
-            else:  # 10, boy, queen, king all with value 10
+            elif i < 13:  # 10, boy, queen, king all with value 10
                 deck.extend([10] * 4 * self.num_decks)
+            else:  # ace init with value 11
+                deck.extend([11] * 4 * self.num_decks)
 
         return deck
 
