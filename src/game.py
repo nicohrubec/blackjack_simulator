@@ -86,6 +86,7 @@ class Game:
                     else:  # hard hand so bust
                         player_bust = True
                         print("PLAYER BUSTED")
+                        break
 
             if not player_bust:  # player has not busted  --> dealers turn
                 while sum(dealer_cards) < 17:
