@@ -79,19 +79,28 @@ class Game:
 
                 # check for bust
                 if sum(player_cards) > 21:
-                    player_bust = True
-                    print("PLAYER BUSTED")
+                    # check if the hand is soft or hard
+                    if 11 in player_cards:  # if the hand is soft we can just value the ace as 1
+                        player_cards.remove(11)
+                        player_cards.append(1)
+                    else:  # hard hand so bust
+                        player_bust = True
+                        print("PLAYER BUSTED")
 
             if not player_bust:  # player has not busted  --> dealers turn
                 while sum(dealer_cards) < 17:
                     dealer_cards.append(self.card_deck.pop())
 
                     # check for bust
-                    if sum(dealer_cards) > 21:  # player wins
-                        self.player.add_capital(2 * bet)  # add bet + win to player account
-                        dealer_bust = True
-                        print("DEALER BUSTED")
-                        break
+                    if sum(dealer_cards) > 21:
+                        if 11 in dealer_cards:  # hand soft ?
+                            dealer_cards.remove(11)
+                            dealer_cards.append(1)
+                        else:  # hard hand so player wins
+                            self.player.add_capital(2 * bet)  # add bet + win to player account
+                            dealer_bust = True
+                            print("DEALER BUSTED")
+                            break
 
                 if not dealer_bust:
                     if sum(player_cards) > sum(dealer_cards):  # player wins
