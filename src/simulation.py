@@ -1,6 +1,7 @@
 import pandas as pd
 
-from src.game import Game, Player
+from src.game import Game
+from src.players import Player
 
 
 class Simulator():
