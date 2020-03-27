@@ -113,6 +113,9 @@ class Game:
                     else:  # house wins
                         print("HOUSE WINS")
 
+        # store ace values all as value 11 again
+        player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
+        dealer_cards = [card_value if card_value != 1 else 11 for card_value in dealer_cards]
         self.played_cards.extend(player_cards)
         self.played_cards.extend(dealer_cards)
 
