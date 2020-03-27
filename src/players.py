@@ -1,26 +1,40 @@
 def player_factory(player_type, capital):
     if player_type == 'basic':
-        return Player(capital)
+        return BasicPlayer(init_capital=capital)
     else:
         raise ValueError('There is no such player.')
 
 
-class Player:
-
+class Player(object):
     def __init__(self, init_capital):
         self.capital = init_capital
 
-    def bet(self):  # bet based on strategy
+    def bet(self):
+        raise NotImplementedError
+
+    def bet_amount(self, amount):
+        self.capital -= amount
+
+    def play(self, player_cards, dealer_cards):
+        raise NotImplementedError
+
+    def add_capital(self, amount):
+        self.capital += amount
+
+    def get_capital(self):
+        return self.capital
+
+
+class BasicPlayer(Player):
+
+    def bet(self):
         if self.capital > 5:
             self.capital -= 5
             return 5
         else:
             return 0
 
-    def bet_amount(self, amount):
-        self.capital -= amount
-
-    def play(self, player_cards, dealer_card):  # hit or stand for given game setting
+    def play(self, player_cards, dealer_cards):
         player_value = sum(player_cards)
 
         if player_value == 11:
@@ -29,9 +43,3 @@ class Player:
             return 'H'
         else:
             return 'S'
-
-    def add_capital(self, amount):
-        self.capital += amount
-
-    def get_capital(self):
-        return self.capital
