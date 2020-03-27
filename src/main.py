@@ -1,6 +1,4 @@
-from src.game import Game, Player
+from src.simulation import Simulator
 
-p = Player(1000)
-g = Game(1, p, 100, .5)
-g.play_game()
-print(p.capital)
+s = Simulator(n_games=100, n_rounds=100, num_decks=6, deck_penetration=.5, player_capital=1000)
+results = s.simulate()
