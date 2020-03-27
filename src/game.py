@@ -6,6 +6,7 @@ class Game:
     def __init__(self, num_decks, player, max_rounds, deck_penetration):
         self.num_decks = num_decks
         self.player = player
+        self.player_capital = np.zeros(max_rounds)
         self.max_rounds = max_rounds
         self.deck_penetration = deck_penetration
 
@@ -43,6 +44,10 @@ class Game:
 
             if len(self.played_cards) / (52 * self.num_decks) > self.deck_penetration:
                 self.shuffle_deck()
+
+            self.player_capital[i] = self.player.get_capital()  # store capital at current timestep
+
+        return self.player_capital
 
     def play_round(self, bet):
         # deal some cards
@@ -137,7 +142,7 @@ class Player:
 
     def play(self, player_cards, dealer_card):  # hit or stand for given game setting
         player_value = sum(player_cards)
-        
+
         if player_value == 11:
             return 'D'
         elif player_value < 17:
@@ -147,3 +152,6 @@ class Player:
 
     def add_capital(self, amount):
         self.capital += amount
+
+    def get_capital(self):
+        return self.capital
