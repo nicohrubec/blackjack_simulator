@@ -1,7 +1,7 @@
 import pandas as pd
 
-from src.game import Game
-from src.players import player_factory
+from src.game_simulation.game import Game
+from src.game_simulation.players import player_factory
 
 
 class Simulator:
