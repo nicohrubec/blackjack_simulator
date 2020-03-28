@@ -52,3 +52,7 @@ class Simulator:
         df['step_std'] = df.std(axis=1)
 
         return df
+
+    def save_results(self):
+        # TODO: change hardcoded path to path relative to project directory
+        self.results.to_csv('../results/results.csv', index=False)
