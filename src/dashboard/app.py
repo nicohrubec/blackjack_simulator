@@ -83,8 +83,29 @@ def get_app(data):
         get_dropdown('Num Decks', 'num_decks_dd', data.num_decks.unique()),
         get_dropdown('Deck Penetration', 'penetration_dd', data.deck_penetration.unique()),
         get_dropdown('Player Capital', 'capital_dd', data.capital.unique()),
-        generate_table(data)
+        html.Div(id='my-div', style={'width': '100%', 'overflowX': 'scroll'})
     ], style={'width': '80%', 'padding-left': '10%', 'padding-right': '10%'})
+
+    @dashboard.callback(
+        Output('my-div', 'children'),
+        [Input('player_dd', 'value'), Input('num_decks_dd', 'value'), Input('penetration_dd', 'value'),
+         Input('capital_dd', 'value')]
+    )
+    def update_table(player_value, num_decks_value, penetration_value, capital_value):
+        dff = data[data['player'] == player_value]
+        dff = dff[dff['num_decks'] == num_decks_value]
+        dff = dff[dff['deck_penetration'] == penetration_value]
+        dff = dff[dff['capital'] == capital_value]
+
+        return [html.Table([
+            html.Thead(
+                html.Tr([html.Th(col) for col in dff.columns])
+            ),
+            html.Tbody([
+                html.Tr([
+                    html.Td(dff.iloc[i][col]) for col in dff.columns
+                ]) for i in range(min(len(dff), 5))
+            ])])]
 
     return dashboard
 
