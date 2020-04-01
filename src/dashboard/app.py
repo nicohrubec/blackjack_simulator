@@ -9,19 +9,6 @@ import random
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
-def generate_table(df, rows=5):
-    return html.Div([html.Table([
-        html.Thead(
-            html.Tr([html.Th(col) for col in df.columns])
-        ),
-        html.Tbody([
-            html.Tr([
-                html.Td(df.iloc[i][col]) for col in df.columns
-            ]) for i in range(min(len(df), rows))
-        ]),
-    ])], style={'width': '100%', 'overflowX': 'scroll'})
-
-
 def get_dropdown(title, id, options):
     return html.Div([
         html.H4(title),
