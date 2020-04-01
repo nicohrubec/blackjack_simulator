@@ -4,6 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 import pandas as pd
+import random
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -81,6 +82,23 @@ def generate_table(df, rows=5):
     ])], style={'width': '100%', 'overflowX': 'scroll'})
 
 
+def generate_raw_figure(df, sample=100):
+    return {
+        'data': [
+            dict(
+                x=[i for i in range(1, 101)],
+                y=df[run_name],
+                mode='lines',
+                name=run_name
+            ) for run_name in random.sample([col for col in df.columns if col.startswith('run')], sample)
+        ],
+        'layout': dict(
+            xaxis={'title': 'Num rounds after game start'},
+            yaxis={'title': 'Remaining capital of the player'}
+        )
+    }
+
+
 def get_app(data):
     dashboard = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -96,11 +114,12 @@ def get_app(data):
         get_dropdown('Num Decks', 'num_decks_dd', data.num_decks.unique()),
         get_dropdown('Deck Penetration', 'penetration_dd', data.deck_penetration.unique()),
         get_dropdown('Player Capital', 'capital_dd', data.capital.unique()),
-        html.Div(id='my-div', style={'width': '100%', 'overflowX': 'scroll'})
+        html.Div(id='my-div'),
+        dcc.Graph(id='raw-values-line-plot')
     ], style={'width': '80%', 'padding-left': '10%', 'padding-right': '10%'})
 
     @dashboard.callback(
-        Output('my-div', 'children'),
+        [Output('my-div', 'children'), Output('raw-values-line-plot', 'figure')],
         [Input('player_dd', 'value'), Input('num_decks_dd', 'value'), Input('penetration_dd', 'value'),
          Input('capital_dd', 'value')]
     )
@@ -110,7 +129,7 @@ def get_app(data):
         dff = dff[dff['deck_penetration'] == penetration_value]
         dff = dff[dff['capital'] == capital_value]
 
-        return generate_table(dff)
+        return generate_table(dff), generate_raw_figure(dff)
 
     return dashboard
 
