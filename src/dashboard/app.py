@@ -68,6 +68,19 @@ def get_summary_graphs(df, capital):
     ], style={'columnCount': 2})
 
 
+def generate_table(df, rows=5):
+    return html.Div([html.Table([
+        html.Thead(
+            html.Tr([html.Th(col) for col in df.columns])
+        ),
+        html.Tbody([
+            html.Tr([
+                html.Td(df.iloc[i][col]) for col in df.columns
+            ]) for i in range(min(len(df), rows))
+        ]),
+    ])], style={'width': '100%', 'overflowX': 'scroll'})
+
+
 def get_app(data):
     dashboard = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -97,15 +110,7 @@ def get_app(data):
         dff = dff[dff['deck_penetration'] == penetration_value]
         dff = dff[dff['capital'] == capital_value]
 
-        return [html.Table([
-            html.Thead(
-                html.Tr([html.Th(col) for col in dff.columns])
-            ),
-            html.Tbody([
-                html.Tr([
-                    html.Td(dff.iloc[i][col]) for col in dff.columns
-                ]) for i in range(min(len(dff), 5))
-            ])])]
+        return generate_table(dff)
 
     return dashboard
 
