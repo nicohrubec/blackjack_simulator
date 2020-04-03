@@ -37,7 +37,9 @@ class BasicPlayer(Player):
     def play(self, player_cards, dealer_cards):
         player_value = sum(player_cards)
 
-        if player_value == 11:
+        if player_cards[0] == player_cards[1]:
+            return 'P'
+        elif player_value == 11:
             return 'D'
         elif player_value < 17:
             return 'H'
