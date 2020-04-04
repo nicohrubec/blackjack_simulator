@@ -2,6 +2,7 @@ import pandas as pd
 
 from src.game_simulation.game import Game
 from src.game_simulation.players import player_factory
+from src import configs
 
 
 class Simulator:
@@ -54,5 +55,5 @@ class Simulator:
         return df
 
     def save_results(self):
-        # TODO: change hardcoded path to path relative to project directory
-        self.results.to_csv('../results/results.csv', index=False)
+        path = configs.results_folder / 'results.csv'
+        self.results.to_csv(path, index=False)

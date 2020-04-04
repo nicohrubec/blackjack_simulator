@@ -6,6 +6,8 @@ from dash.dependencies import Input, Output
 import pandas as pd
 import random
 
+from src import configs
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
@@ -128,6 +130,7 @@ def get_app(data):
 
 
 if __name__ == '__main__':
-    results = pd.read_csv("../../results/results.csv")
+    path = configs.project_path.parent / 'results' / 'results.csv'
+    results = pd.read_csv(path)
     app = get_app(data=results)
     app.run_server(debug=True)
