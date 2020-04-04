@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 
 class Game:
@@ -68,30 +69,19 @@ class Game:
 
         if not blackjack:  # player does not have a blackjack so just start round
             # player begins
-            while True:
-                # information of relevance for the decision of the player is the value of his cards and the value of
-                # the dealer card he can see
-                move = self.player.play(player_cards, dealer_cards[0])
 
-                if move == 'H':  # HIT
-                    player_cards.append(self.card_deck.pop())
-                elif move == 'S':  # STAND
-                    break
-                elif move == 'D':  # DOUBLE DOWN
-                    self.player.bet_amount(bet)  # double the bet
-                    player_cards.append(self.card_deck.pop())  # player gets another card
-                    break  # now its the dealers turn
+            # information of relevance for the decision of the player is the value of his cards and the value of
+            # the dealer card he can see
+            move = self.player.play(player_cards, dealer_cards[0])
 
-                # check for bust
-                if sum(player_cards) > 21:
-                    # check if the hand is soft or hard
-                    if 11 in player_cards:  # if the hand is soft we can just value the ace as 1
-                        player_cards.remove(11)
-                        player_cards.append(1)
-                    else:  # hard hand so bust
-                        player_bust = True
-                        print("PLAYER BUSTED")
-                        break
+            if move == 'H':  # HIT
+                player_cards.append(self.card_deck.pop())
+                player_cards, player_bust = self.players_turn(player_cards, dealer_cards)
+            elif move == 'S':  # STAND
+                pass
+            elif move == 'D':  # DOUBLE DOWN
+                self.player.bet_amount(bet)  # double the bet
+                player_cards.append(self.card_deck.pop())  # player gets another card
 
             if not player_bust:  # player has not busted  --> dealers turn
                 while sum(dealer_cards) < 17:
@@ -123,3 +113,32 @@ class Game:
         dealer_cards = [card_value if card_value != 1 else 11 for card_value in dealer_cards]
         self.played_cards.extend(player_cards)
         self.played_cards.extend(dealer_cards)
+
+    def players_turn(self, player_cards, dealer_cards):
+        player_bust = False
+        player_cards = copy.deepcopy(player_cards)
+
+        while True:
+            # information of relevance for the decision of the player is the value of his cards and the value of
+            # the dealer card he can see
+            move = self.player.play(player_cards, dealer_cards[0])
+
+            if move == 'H':  # HIT
+                player_cards.append(self.card_deck.pop())
+            elif move == 'S' or move == 'D':  # STAND
+                break
+            elif move == 'P':
+                break
+
+            # check for bust
+            if sum(player_cards) > 21:
+                # check if the hand is soft or hard
+                if 11 in player_cards:  # if the hand is soft we can just value the ace as 1
+                    player_cards.remove(11)
+                    player_cards.append(1)
+                else:  # hard hand so bust
+                    player_bust = True
+                    print("PLAYER BUSTED")
+                    break
+
+        return player_cards, player_bust
