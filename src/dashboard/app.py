@@ -21,6 +21,11 @@ def get_dropdown(title, id, options):
 
 
 def get_summary_graph(df, capital, stat, title):
+    num_decks, deck_penetration, players, budgets = df.num_decks.unique(), df.deck_penetration.unique(), \
+                                                    df.player.unique(), df.capital.unique()
+    num_settings = len(num_decks) * len(deck_penetration) * len(players) * len(budgets)
+    num_rounds = int(len(df) / num_settings)
+
     return html.Div([
         html.Div([
             html.H4(title)
@@ -30,12 +35,12 @@ def get_summary_graph(df, capital, stat, title):
             figure={
                 'data': [
                     dict(
-                        x=[i for i in range(1, 101)],
+                        x=[i for i in range(1, num_rounds + 1)],
                         y=df[(df.num_decks == d) & (df.capital == capital) & (df.deck_penetration == p) &
                              (df.player == i)][('step_' + str(stat))],
                         mode='lines',
                         name=str(i) + ' player, ' + str(p) + ' deck penetration, ' + str(d) + ' decks'
-                    ) for d in df.num_decks.unique() for p in df.deck_penetration.unique() for i in df.player.unique()
+                    ) for d in num_decks for p in deck_penetration for i in players
                 ],
                 'layout': dict(
                     xaxis={'title': 'Num rounds after game start'},
