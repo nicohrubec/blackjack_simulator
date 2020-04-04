@@ -53,6 +53,7 @@ class Game:
     def play_round(self, bet):
         # deal some cards
         player_cards = [self.card_deck.pop(), self.card_deck.pop()]
+        player_cards2 = None
         dealer_cards = [self.card_deck.pop(), self.card_deck.pop()]
         blackjack = False
 
@@ -83,15 +84,27 @@ class Game:
                 bet *= 2
 
                 player_cards.append(self.card_deck.pop())  # player gets another card
+            elif move == 'P':  # SPLIT
+                player_cards2 = [player_cards[1], self.card_deck.pop()]  # init second hand on split
+                player_cards2 = self.players_turn(player_cards2, dealer_cards)
+                player_cards = [player_cards[0], self.card_deck.pop()]
+                player_cards = self.players_turn(player_cards, dealer_cards)
 
             dealer_cards = self.dealers_turn(dealer_cards)  # dealers turn
-            self.payout(player_cards, dealer_cards, bet)  # pay the player if necessary
+            # pay the player if necessary
+            self.payout(player_cards, dealer_cards, bet)
+            if player_cards2 is not None:
+                self.payout(player_cards2, dealer_cards, bet)
 
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
         dealer_cards = [card_value if card_value != 1 else 11 for card_value in dealer_cards]
         self.played_cards.extend(player_cards)
         self.played_cards.extend(dealer_cards)
+
+        if player_cards2 is not None:  # on split play do the same for the second hand
+            player_cards2 = [card_value if card_value != 1 else 11 for card_value in player_cards2]
+            self.played_cards.extend(player_cards2)
 
     def players_turn(self, player_cards, dealer_cards):
         player_cards = copy.deepcopy(player_cards)
