@@ -86,18 +86,7 @@ class Game:
                 dealer_cards, dealer_bust = self.dealers_turn(dealer_cards)
 
                 # payout
-                if not dealer_bust:  # dealer did not bust
-                    if sum(player_cards) > sum(dealer_cards):  # player wins
-                        print("PLAYER WINS")
-                        self.player.add_capital(2 * bet)
-                    elif sum(player_cards) == sum(dealer_cards):  # push  --> return bet
-                        print("PUSH")
-                        self.player.add_capital(bet)
-                    else:  # house wins
-                        print("HOUSE WINS")
-                else:
-                    print("DEALER BUSTED")
-                    self.player.add_capital(2 * bet)  # dealer busted --> add bet + win to player account
+                self.payout(player_cards, dealer_cards, dealer_bust, bet)
 
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
@@ -151,3 +140,17 @@ class Game:
                     break
 
         return dealer_cards, dealer_bust
+
+    def payout(self, player_cards, dealer_cards, dealer_bust, bet):
+        if not dealer_bust:  # dealer did not bust
+            if sum(player_cards) > sum(dealer_cards):  # player wins
+                print("PLAYER WINS")
+                self.player.add_capital(2 * bet)
+            elif sum(player_cards) == sum(dealer_cards):  # push  --> return bet
+                print("PUSH")
+                self.player.add_capital(bet)
+            else:  # house wins
+                print("HOUSE WINS")
+        else:
+            print("DEALER BUSTED")
+            self.player.add_capital(2 * bet)  # dealer busted --> add bet + win to player account
