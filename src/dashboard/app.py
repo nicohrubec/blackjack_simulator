@@ -70,6 +70,7 @@ def generate_table(df, rows=5):
 
 
 def generate_raw_figure(df, sample=100):
+    run_cols = [col for col in df.columns if col.startswith('run')]
     return {
         'data': [
             dict(
@@ -77,7 +78,7 @@ def generate_raw_figure(df, sample=100):
                 y=df[run_name],
                 mode='lines',
                 name=run_name
-            ) for run_name in random.sample([col for col in df.columns if col.startswith('run')], sample)
+            ) for run_name in random.sample(run_cols, min(sample, len(run_cols)))
         ],
         'layout': dict(
             xaxis={'title': 'Num rounds after game start'},
