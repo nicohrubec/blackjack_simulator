@@ -54,7 +54,6 @@ class Game:
         # deal some cards
         player_cards = [self.card_deck.pop(), self.card_deck.pop()]
         dealer_cards = [self.card_deck.pop(), self.card_deck.pop()]
-        player_bust = False
         blackjack = False
 
         if sum(player_cards) == 21:  # blackjack: ace + value 10 card = 21
@@ -75,18 +74,15 @@ class Game:
 
             if move == 'H':  # HIT
                 player_cards.append(self.card_deck.pop())
-                player_cards, player_bust = self.players_turn(player_cards, dealer_cards)
+                player_cards = self.players_turn(player_cards, dealer_cards)
             elif move == 'S':  # STAND
                 pass
             elif move == 'D':  # DOUBLE DOWN
                 self.player.bet_amount(bet)  # double the bet
                 player_cards.append(self.card_deck.pop())  # player gets another card
 
-            if not player_bust:  # player has not busted  --> dealers turn
-                dealer_cards = self.dealers_turn(dealer_cards)
-
-            # payout
-            self.payout(player_cards, dealer_cards, bet)
+            dealer_cards = self.dealers_turn(dealer_cards)  # dealers turn
+            self.payout(player_cards, dealer_cards, bet)  # pay the player if necessary
 
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
@@ -95,7 +91,6 @@ class Game:
         self.played_cards.extend(dealer_cards)
 
     def players_turn(self, player_cards, dealer_cards):
-        player_bust = False
         player_cards = copy.deepcopy(player_cards)
 
         while True:
@@ -117,10 +112,9 @@ class Game:
                     player_cards.remove(11)
                     player_cards.append(1)
                 else:  # hard hand so bust
-                    player_bust = True
                     break
 
-        return player_cards, player_bust
+        return player_cards
 
     def dealers_turn(self, dealer_cards):
         dealer_cards = copy.deepcopy(dealer_cards)
