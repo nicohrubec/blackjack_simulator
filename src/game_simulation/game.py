@@ -55,7 +55,6 @@ class Game:
         player_cards = [self.card_deck.pop(), self.card_deck.pop()]
         dealer_cards = [self.card_deck.pop(), self.card_deck.pop()]
         player_bust = False
-        dealer_bust = False
         blackjack = False
 
         if sum(player_cards) == 21:  # blackjack: ace + value 10 card = 21
@@ -84,21 +83,10 @@ class Game:
                 player_cards.append(self.card_deck.pop())  # player gets another card
 
             if not player_bust:  # player has not busted  --> dealers turn
-                while sum(dealer_cards) < 17:
-                    dealer_cards.append(self.card_deck.pop())
+                dealer_cards, dealer_bust = self.dealers_turn(dealer_cards)
 
-                    # check for bust
-                    if sum(dealer_cards) > 21:
-                        if 11 in dealer_cards:  # hand soft ?
-                            dealer_cards.remove(11)
-                            dealer_cards.append(1)
-                        else:  # hard hand so player wins
-                            self.player.add_capital(2 * bet)  # add bet + win to player account
-                            dealer_bust = True
-                            print("DEALER BUSTED")
-                            break
-
-                if not dealer_bust:
+                # payout
+                if not dealer_bust:  # dealer did not bust
                     if sum(player_cards) > sum(dealer_cards):  # player wins
                         print("PLAYER WINS")
                         self.player.add_capital(2 * bet)
@@ -107,6 +95,9 @@ class Game:
                         self.player.add_capital(bet)
                     else:  # house wins
                         print("HOUSE WINS")
+                else:
+                    print("DEALER BUSTED")
+                    self.player.add_capital(2 * bet)  # dealer busted --> add bet + win to player account
 
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
@@ -142,3 +133,21 @@ class Game:
                     break
 
         return player_cards, player_bust
+
+    def dealers_turn(self, dealer_cards):
+        dealer_cards = copy.deepcopy(dealer_cards)
+        dealer_bust = False
+
+        while sum(dealer_cards) < 17:
+            dealer_cards.append(self.card_deck.pop())
+
+            # check for bust
+            if sum(dealer_cards) > 21:
+                if 11 in dealer_cards:  # hand soft ?
+                    dealer_cards.remove(11)
+                    dealer_cards.append(1)
+                else:  # hard hand so player wins
+                    dealer_bust = True
+                    break
+
+        return dealer_cards, dealer_bust
