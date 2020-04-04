@@ -78,7 +78,10 @@ class Game:
             elif move == 'S':  # STAND
                 pass
             elif move == 'D':  # DOUBLE DOWN
-                self.player.bet_amount(bet)  # double the bet
+                # double the bet
+                self.player.bet_amount(bet)
+                bet *= 2
+
                 player_cards.append(self.card_deck.pop())  # player gets another card
 
             dealer_cards = self.dealers_turn(dealer_cards)  # dealers turn
