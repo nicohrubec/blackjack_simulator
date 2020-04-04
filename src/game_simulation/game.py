@@ -83,10 +83,10 @@ class Game:
                 player_cards.append(self.card_deck.pop())  # player gets another card
 
             if not player_bust:  # player has not busted  --> dealers turn
-                dealer_cards, dealer_bust = self.dealers_turn(dealer_cards)
+                dealer_cards = self.dealers_turn(dealer_cards)
 
-                # payout
-                self.payout(player_cards, dealer_cards, dealer_bust, bet)
+            # payout
+            self.payout(player_cards, dealer_cards, bet)
 
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
@@ -118,14 +118,12 @@ class Game:
                     player_cards.append(1)
                 else:  # hard hand so bust
                     player_bust = True
-                    print("PLAYER BUSTED")
                     break
 
         return player_cards, player_bust
 
     def dealers_turn(self, dealer_cards):
         dealer_cards = copy.deepcopy(dealer_cards)
-        dealer_bust = False
 
         while sum(dealer_cards) < 17:
             dealer_cards.append(self.card_deck.pop())
@@ -136,21 +134,26 @@ class Game:
                     dealer_cards.remove(11)
                     dealer_cards.append(1)
                 else:  # hard hand so player wins
-                    dealer_bust = True
                     break
 
-        return dealer_cards, dealer_bust
+        return dealer_cards
 
-    def payout(self, player_cards, dealer_cards, dealer_bust, bet):
-        if not dealer_bust:  # dealer did not bust
-            if sum(player_cards) > sum(dealer_cards):  # player wins
-                print("PLAYER WINS")
-                self.player.add_capital(2 * bet)
-            elif sum(player_cards) == sum(dealer_cards):  # push  --> return bet
-                print("PUSH")
-                self.player.add_capital(bet)
-            else:  # house wins
-                print("HOUSE WINS")
+    def payout(self, player_cards, dealer_cards, bet):
+        player_value = sum(player_cards)
+        dealer_value = sum(dealer_cards)
+
+        if player_value <= 21:  # player did not bust
+            if dealer_value <= 21:  # dealer did not bust
+                if player_value > sum(dealer_cards):  # player wins
+                    print("PLAYER WINS")
+                    self.player.add_capital(2 * bet)
+                elif player_value == dealer_value:  # push  --> return bet
+                    print("PUSH")
+                    self.player.add_capital(bet)
+                else:  # house wins
+                    print("HOUSE WINS")
+            else:
+                print("DEALER BUSTED")
+                self.player.add_capital(2 * bet)  # dealer busted --> add bet + win to player account
         else:
-            print("DEALER BUSTED")
-            self.player.add_capital(2 * bet)  # dealer busted --> add bet + win to player account
+            print("PLAYER BUSTED")
