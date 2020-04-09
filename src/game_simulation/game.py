@@ -55,16 +55,7 @@ class Game:
         player_cards = [self.card_deck.pop(), self.card_deck.pop()]
         player_cards2 = None
         dealer_cards = [self.card_deck.pop(), self.card_deck.pop()]
-        blackjack = False
-
-        if sum(player_cards) == 21:  # blackjack: ace + value 10 card = 21
-            if not sum(dealer_cards) == 21:  # dealer has no blackjack
-                print("BLACKJACK")
-                self.player.add_capital(2.5 * bet)  # bet + 1.5 * bet
-            else:  # dealer has blackjack as well
-                self.player.add_capital(bet)  # player gets back his bet
-
-            blackjack = True  # round done
+        blackjack = self.check_blackjack(player_cards, dealer_cards, bet)
 
         if not blackjack:  # player does not have a blackjack so just start round
             # player begins
@@ -78,23 +69,37 @@ class Game:
                 player_cards = self.players_turn(player_cards, dealer_cards)
             elif move == 'S':  # STAND
                 pass
-            elif move == 'D':  # DOUBLE DOWN
+            elif move == 'D' or move == 'DS':  # DOUBLE DOWN
                 # double the bet
                 self.player.bet_amount(bet)
                 bet *= 2
 
                 player_cards.append(self.card_deck.pop())  # player gets another card
+
+                # check for bust
+                if sum(player_cards) > 21:
+                    # check if the hand is soft or hard
+                    if 11 in player_cards:  # if the hand is soft we can just value the ace as 1
+                        player_cards.remove(11)
+                        player_cards.append(1)
             elif move == 'P':  # SPLIT
+                self.player.bet_amount(bet)
                 player_cards2 = [player_cards[1], self.card_deck.pop()]  # init second hand on split
-                player_cards2 = self.players_turn(player_cards2, dealer_cards)
+                blackjack2 = self.check_blackjack(player_cards2, dealer_cards, bet)
+                if not blackjack2:
+                    player_cards2 = self.players_turn(player_cards2, dealer_cards)
                 player_cards = [player_cards[0], self.card_deck.pop()]
-                player_cards = self.players_turn(player_cards, dealer_cards)
+                blackjack = self.check_blackjack(player_cards, dealer_cards, bet)
+                if not blackjack:
+                    player_cards = self.players_turn(player_cards, dealer_cards)
 
             dealer_cards = self.dealers_turn(dealer_cards)  # dealers turn
             # pay the player if necessary
-            self.payout(player_cards, dealer_cards, bet)
+            if not blackjack:
+                self.payout(player_cards, dealer_cards, bet)
             if player_cards2 is not None:
-                self.payout(player_cards2, dealer_cards, bet)
+                if not blackjack2:
+                    self.payout(player_cards2, dealer_cards, bet)
 
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
@@ -114,9 +119,9 @@ class Game:
             # the dealer card he can see
             move = self.player.play(player_cards, dealer_cards[0])
 
-            if move == 'H':  # HIT
+            if move == 'H' or move == 'D':  # HIT
                 player_cards.append(self.card_deck.pop())
-            elif move == 'S' or move == 'D':  # STAND
+            elif move == 'S' or move == 'DS':  # STAND
                 break
             elif move == 'P':
                 break
@@ -167,3 +172,15 @@ class Game:
                 self.player.add_capital(2 * bet)  # dealer busted --> add bet + win to player account
         else:
             print("PLAYER BUSTED")
+
+    def check_blackjack(self, player_cards, dealer_cards, bet):
+        if sum(player_cards) == 21:  # blackjack: ace + value 10 card = 21
+            if not sum(dealer_cards) == 21:  # dealer has no blackjack
+                print("BLACKJACK")
+                self.player.add_capital(2.5 * bet)  # bet + 1.5 * bet
+            else:  # dealer has blackjack as well
+                self.player.add_capital(bet)  # player gets back his bet
+
+            return True
+
+        return False
