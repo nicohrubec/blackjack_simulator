@@ -57,3 +57,6 @@ class Simulator:
     def save_results(self):
         path = configs.results_folder / 'results.csv'
         self.results.to_csv(path, index=False)
+
+    def get_results(self):
+        return self.results
