@@ -47,7 +47,7 @@ def get_summary_graph(df, capital, stat, title):
                 'layout': dict(
                     xaxis={'title': 'Num rounds after game start'},
                     yaxis={'title': 'Mean remaining capital of the player'},
-                    legend={'x': 0, 'y': 0}
+                    legend={'x': 1, 'y': 1}
                 )
             }
         )
@@ -60,7 +60,7 @@ def get_summary_graphs(df, capital):
                                                'with init capital of ' + str(capital)),
         get_summary_graph(df, capital, 'std', 'Std of remaining capital at a given step for player '
                                               'with init capital of ' + str(capital))
-    ], style={'columnCount': 2})
+    ], style={'columnCount': 1})
 
 
 def generate_table(df, rows=5):
