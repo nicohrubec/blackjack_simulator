@@ -36,7 +36,10 @@ class Game:
 
     def play_game(self):
         for i in range(self.max_rounds):
-            bet = self.player.bet()  # how much does the player wanna play for ?
+            if self.player.is_counter():
+                bet = self.player.bet(self.num_decks)  # how much does the player wanna play for ?
+            else:
+                bet = self.player.bet()
 
             if bet > 0:
                 self.play_round(bet)
@@ -45,6 +48,8 @@ class Game:
 
             if len(self.played_cards) / (52 * self.num_decks) > self.deck_penetration:
                 self.shuffle_deck()
+                if self.player.is_counter():
+                    self.player.reset_count()
 
             self.player_capital[i] = self.player.get_capital()  # store capital at current timestep
 
@@ -110,6 +115,12 @@ class Game:
         if player_cards2 is not None:  # on split play do the same for the second hand
             player_cards2 = [card_value if card_value != 1 else 11 for card_value in player_cards2]
             self.played_cards.extend(player_cards2)
+
+            if self.player.is_counter():
+                self.player.update_count(player_cards, player_cards2, dealer_cards)
+        else:
+            if self.player.is_counter():
+                self.player.update_count(player_cards, dealer_cards)
 
     def players_turn(self, player_cards, dealer_cards):
         player_cards = copy.deepcopy(player_cards)

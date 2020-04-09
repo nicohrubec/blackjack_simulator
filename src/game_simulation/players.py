@@ -114,7 +114,7 @@ class CountingPlayer(StrategicPlayer):
 
     def bet(self, num_decks, *args, **kwargs):
         super(CountingPlayer, self).bet(num_decks, *args, **kwargs)
-        return (self.get_true_count(num_decks) - 1) * self.bet_unit
+        return max((self.get_true_count(num_decks) - 1) * self.bet_unit, self.bet_unit)
 
     def update_count(self, *args):
         for cards in args:
@@ -123,12 +123,16 @@ class CountingPlayer(StrategicPlayer):
 
             self.num_seen_cards += len(cards)
 
+    def reset_count(self):
+        self.running_count = 0
+        self.num_seen_cards = 0
+
     @staticmethod
     def get_card_value(card):
         if card == 1 or card == 11 or card == 10:
-            return 1
-        elif card < 7:
             return -1
+        elif card < 7:
+            return 1
         else:
             return 0
 
