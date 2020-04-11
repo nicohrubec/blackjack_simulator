@@ -21,4 +21,4 @@ if __name__ == '__main__':
     settings_dict = get_settings()
     simulator = run_simulation(settings_dict)
     app = get_app(simulator.get_results())
-    app.run_server(debug=True)
+    app.run_server(debug=False)
