@@ -67,7 +67,7 @@ class Game:
 
             # information of relevance for the decision of the player is the value of his cards and the value of
             # the dealer card he can see
-            move = self.player.play(player_cards, dealer_cards[0])
+            move = self.player.play(player_cards, dealer_cards[0])  # pick first move
 
             if move == 'H':  # HIT
                 player_cards.append(self.card_deck.pop())
@@ -109,6 +109,7 @@ class Game:
         # store ace values all as value 11 again
         player_cards = [card_value if card_value != 1 else 11 for card_value in player_cards]
         dealer_cards = [card_value if card_value != 1 else 11 for card_value in dealer_cards]
+        # add used cards to stack of discarded cards
         self.played_cards.extend(player_cards)
         self.played_cards.extend(dealer_cards)
 
@@ -116,6 +117,7 @@ class Game:
             player_cards2 = [card_value if card_value != 1 else 11 for card_value in player_cards2]
             self.played_cards.extend(player_cards2)
 
+            # update running count of player if he deploys a counting strategy
             if self.player.is_counter():
                 self.player.update_count(player_cards, player_cards2, dealer_cards)
         else:
@@ -190,7 +192,7 @@ class Game:
                 print("BLACKJACK")
                 self.player.add_capital(2.5 * bet)  # bet + 1.5 * bet
             else:  # dealer has blackjack as well
-                self.player.add_capital(bet)  # player gets back his bet
+                self.player.add_capital(bet)  # player gets his bet back
 
             return True
 

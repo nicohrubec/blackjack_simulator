@@ -11,6 +11,7 @@ from src import configs
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
+# selection for individual run visualisation
 def get_dropdown(title, id, options):
     return html.Div([
         html.H4(title),
@@ -54,6 +55,7 @@ def get_summary_graph(df, capital, stat, title):
     ])
 
 
+# create line graphs comparing statistics of the individual simulation setting results
 def get_summary_graphs(df, capital):
     return html.Div([
         get_summary_graph(df, capital, 'mean', 'Mean remaining capital at a given step for player '
@@ -63,6 +65,7 @@ def get_summary_graphs(df, capital):
     ], style={'columnCount': 1})
 
 
+# show data.head()
 def generate_table(df, rows=5):
     return html.Div([html.Table([
         html.Thead(
@@ -76,6 +79,7 @@ def generate_table(df, rows=5):
     ])], style={'width': '100%', 'overflowX': 'scroll'})
 
 
+# line graph of a sample of the individual run results for a selected setting
 def generate_raw_figure(df, sample=100):
     run_cols = [col for col in df.columns if col.startswith('run')]
     return {
@@ -113,6 +117,7 @@ def get_app(data):
         dcc.Graph(id='raw-values-line-plot')
     ], style={'width': '80%', 'padding-left': '10%', 'padding-right': '10%'})
 
+    # adapt shown table and individual run line graph based on user selection
     @dashboard.callback(
         [Output('my-div', 'children'), Output('raw-values-line-plot', 'figure')],
         [Input('player_dd', 'value'), Input('num_decks_dd', 'value'), Input('penetration_dd', 'value'),

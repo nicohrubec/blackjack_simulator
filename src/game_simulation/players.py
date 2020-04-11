@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 
 
+# creates player instances from predefined options
 def player_factory(player_type, capital):
     if player_type == 'basic':
         return BasicPlayer(init_capital=capital)
@@ -14,18 +15,21 @@ def player_factory(player_type, capital):
         raise ValueError('There is no such player.')
 
 
+# Meta class from which further player types are inherited. To create new player types from this class you
+# will have to implement both the betting strategy and the playing strategy for the player you want to create.
+# Examples for how to create players from this player class are given below.
 class Player(object):
     def __init__(self, init_capital):
         self.capital = init_capital
 
     def bet(self):
-        raise NotImplementedError
+        raise NotImplementedError  # for a given game situation how much does the player want to bet ?
 
     def bet_amount(self, amount):
         self.capital -= amount
 
     def play(self, player_cards, dealer_cards):
-        raise NotImplementedError
+        raise NotImplementedError  # for a given game situation what move does the player pick ?
 
     def add_capital(self, amount):
         self.capital += amount
@@ -34,7 +38,7 @@ class Player(object):
         return self.capital
 
     def is_counter(self):
-        return False
+        return False  # reimplement this to True if the player deploys a card counting strategy
 
 
 class BasicPlayer(Player):
@@ -59,6 +63,8 @@ class BasicPlayer(Player):
             return 'S'
 
 
+# This player deploys a naive betting strategy but uses a given strategy card (example in strategies folder)
+# to guide his moves.
 class StrategicPlayer(Player):
 
     def __init__(self, init_capital, file_name):
@@ -81,7 +87,7 @@ class StrategicPlayer(Player):
         if player_value == 21:
             return 'S'
 
-        if len(player_cards) == 2:
+        if len(player_cards) == 2:  # first move
             if player_cards[0] == player_cards[1]:  # split possible
                 player_selector = 'D' + str(player_cards[0])  # eg D8 for double 8s
                 return self.strategy_card.loc[player_selector, str(dealer_cards)]
@@ -94,17 +100,20 @@ class StrategicPlayer(Player):
             else:
                 return self.strategy_card.loc[str(player_value), str(dealer_cards)]
 
-        else:
-            if 11 in player_cards:
+        else:  # further moves --> only hit or stand allowed
+            if 11 in player_cards:  # soft hand
                 if player_value <= 21:
                     player_selector = 'A' + str(player_value - 11)
                 else:
                     player_selector = str(player_value - 10)
                 return self.strategy_card.loc[player_selector, str(dealer_cards)]
-            else:
+            else:  # hard hand
                 return self.strategy_card.loc[str(player_value), str(dealer_cards)] if player_value < 21 else 'S'
 
 
+# This player plays basic strategy like the strategic player but he spreads his bet sizes according
+# to the current count. Count method used here is the HILO system. (+1 for 2-6, 0 for 7-9, -1 for 10 valued cards+ace)
+# Bet size is then computed as true count (running_count / number of remaining decks) - 1 * bet unit
 class CountingPlayer(StrategicPlayer):
     def __init__(self, init_capital, file_name, bet_unit):
         super().__init__(init_capital, file_name)

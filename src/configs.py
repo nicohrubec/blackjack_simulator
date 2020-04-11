@@ -5,6 +5,7 @@ results_folder = project_path / 'results'
 strategies_folder = project_path / 'strategies'
 
 
+# Ask the user for what to simulate
 def get_settings():
     settings = {}
 

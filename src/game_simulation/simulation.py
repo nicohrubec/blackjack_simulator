@@ -5,6 +5,7 @@ from src.game_simulation.players import player_factory
 from src import configs
 
 
+# init simulator object with given settings run the simulation and save results to disk
 def run_simulation(settings):
     s = Simulator(n_games=settings['n_games'], n_rounds=settings['n_rounds'], num_decks=settings['num_decks'],
                   deck_penetration=settings['deck_penetrations'], player_type=settings['players'],
@@ -16,6 +17,8 @@ def run_simulation(settings):
 
 
 class Simulator:
+    # this class just runs the simulation as given by the settings as defined by the user
+    # the run results plus some basic statistics are stored in the results dataframe
     def __init__(self, n_games, n_rounds, num_decks, deck_penetration, player_type, player_capital):
         self.n_games = n_games
         self.n_rounds = n_rounds
