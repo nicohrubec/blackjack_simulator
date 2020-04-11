@@ -5,6 +5,16 @@ from src.game_simulation.players import player_factory
 from src import configs
 
 
+def run_simulation(settings):
+    s = Simulator(n_games=settings['n_games'], n_rounds=settings['n_rounds'], num_decks=settings['num_decks'],
+                  deck_penetration=settings['deck_penetrations'], player_type=settings['players'],
+                  player_capital=settings['player_capital'])
+    s.simulate()
+    s.save_results()
+
+    return s
+
+
 class Simulator:
     def __init__(self, n_games, n_rounds, num_decks, deck_penetration, player_type, player_capital):
         self.n_games = n_games
